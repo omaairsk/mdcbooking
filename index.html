@@ -221,11 +221,12 @@
 </footer>
 
 <!-- ADMIN LOGIN -->
-<div id="loginPanel" style="display:flex; align-items:center; justify-content:center; position:fixed; inset:0; background:#0f172acc;">
+<!-- ADMIN LOGIN (Hidden by default) -->
+<div id="loginPanel" style="display:none; align-items:center; justify-content:center; position:fixed; inset:0; background:#0f172acc;">
   <div style="background:#fff; padding:30px; width:320px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.3)">
     <h2 style="margin-top:0; color:#0f766e; text-align:center">Admin Login</h2>
-    <label>Username</label>
-    <input id="adminUser" type="text" />
+    <label>Email</label>
+    <input id="adminUser" type="email" />
     <label>Password</label>
     <input id="adminPass" type="password" />
     <button onclick="loginAdmin()">Login</button>
