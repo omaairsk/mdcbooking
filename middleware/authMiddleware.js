@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(403);
+  const header = req.headers.authorization;
+  if (!header) return res.sendStatus(401);
 
+  const token = header.split(" ")[1];
   try {
     jwt.verify(token, process.env.JWT_SECRET);
     next();
@@ -11,3 +12,4 @@ module.exports = (req, res, next) => {
     res.sendStatus(403);
   }
 };
+
