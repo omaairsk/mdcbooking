@@ -1,100 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login | Medical Diagnostic Centre</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0f172a;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .card {
-      background: #ffffff;
-      color: #0f172a;
-      padding: 30px;
-      width: 340px;
-      border-radius: 10px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-    h2 {
-      margin-top: 0;
-      text-align: center;
-      color: #0f766e;
-    }
-    label {
-      font-size: 13px;
-      font-weight: bold;
-      margin-top: 12px;
-      display: block;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 6px;
-      border: 1px solid #cbd5e1;
-    }
-    button {
-      margin-top: 16px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #0f766e;
-      color: #fff;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover { background: #115e59; }
-    .error {
-      color: red;
-      font-size: 12px;
-      display: none;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
-</head>
+<html>
 <body>
 
-<div class="card">
-  <h2>Admin Login</h2>
-  <label>Email</label>
-  <input id="email" type="email" />
-  <label>Password</label>
-  <input id="password" type="password" />
-  <button onclick="login()">Login</button>
-  <div class="error" id="error">Invalid login credentials</div>
-</div>
+<h2>Admin Login</h2>
+<input id="email">
+<input id="password" type="password">
+<button onclick="login()">Login</button>
 
 <script>
-  function login() {
-    fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.token) {
-        localStorage.setItem('adminToken', data.token);
-        window.location.href = '/admin-dashboard.html';
-      } else {
-        document.getElementById('error').style.display = 'block';
-      }
-    });
-  }
+function login() {
+  fetch("https://YOUR_BACKEND_DOMAIN/api/auth/login", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({email:email.value,password:password.value})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.token){
+      localStorage.setItem("token",d.token);
+      location.href="admin-dashboard.html";
+    } else alert("Invalid");
+  });
+}
 </script>
 
 </body>
