@@ -4,9 +4,8 @@ const auth = require("../middleware/authMiddleware");
 const { db } = require("../firebase/admin");
 
 router.get("/consultations", auth, async (req, res) => {
-  const snap = await db.collection("consultations").get();
-  const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  res.json(data);
+  const snap = await db.collection("consultations").orderBy("createdAt", "desc").get();
+  res.json(snap.docs.map(d => ({ id: d.id, ...d.data() })));
 });
 
 router.put("/update/:id", auth, async (req, res) => {
