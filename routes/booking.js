@@ -10,16 +10,9 @@ router.post("/book", async (req, res) => {
       createdAt: new Date()
     });
     res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: "Booking failed" });
+  } catch {
+    res.status(500).json({ success: false });
   }
 });
 
 module.exports = router;
-
-
-fetch("https://yourdomain.com/api/booking/book", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data)
-});
