@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical Diagnostic Centre | Online Video Consultation</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --secondary: #14b8a6;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 6px 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 22px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 12px;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+    }
+
+    textarea { resize: vertical; }
+
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover { background: #115e59; }
+
+    .info-list {
+      padding-left: 18px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .meet-box {
+      background: #ecfeff;
+      border: 1px dashed var(--secondary);
+      padding: 14px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Medical Diagnostic Centre</h1>
+  <p>Online Video Consultation via Google Meet</p>
+</header>
+
+<div class="container">
+  <div class="grid">
+
+    <div class="card">
+      <h2>Book Video Consultation</h2>
+
+      <form onsubmit="bookConsultation(event)">
+        <label>Patient Full Name</label>
+        <input type="text" required />
+
+        <label>Mobile Number</label>
+        <input type="tel" required />
+
+        <label>Email Address</label>
+        <input type="email" required />
+
+        <label>Consultation Type</label>
+        <select required>
+          <option value="">Select</option>
+          <option>General Physician</option>
+          <option>Pathology Report Review</option>
+          <option>Radiology Consultation</option>
+          <option>Follow-up Consultation</option>
+        </select>
+
+        <label>Doctor Availability</label>
+        <select required>
+          <option value="">Select</option>
+          <option>Single Doctor</option>
+          <option>Multiple Doctors</option>
+        </select>
+
+        <label>Payment Preference</label>
+        <select required>
+          <option value="">Select</option>
+          <option>Pay at Clinic</option>
+          <option>Online Payment (UPI / Card)</option>
+          <option>Free Follow-up</option>
+        </select>
+
+        <label>Preferred Contact Method</label>
+        <select required>
+          <option value="">Select</option>
+          <option>WhatsApp</option>
+          <option>Email</option>
+          <option>SMS</option>
+        </select>
+
+        <label>Preferred Date & Time</label>
+        <input type="datetime-local" required />
+
+        <label>Health Concern (Optional)</label>
+        <textarea rows="3"></textarea>
+
+        <button type="submit">Request Appointment</button>
+      </form>
+
+      <div class="note">
+        After submission, our staff will confirm your appointment and share a Google Meet link.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>How Online Consultation Works</h2>
+      <ul class="info-list">
+        <li>Book your consultation using the form.</li>
+        <li>Our team reviews your request.</li>
+        <li>You receive a Google Meet link on SMS/Email.</li>
+        <li>Join the video call at scheduled time.</li>
+        <li>Consult doctor & discuss reports.</li>
+      </ul>
+
+      <div class="meet-box">
+        <strong>Platform:</strong> Google Meet<br />
+        <strong>Device:</strong> Mobile / Laptop / Tablet<br />
+        <strong>Internet:</strong> Stable connection recommended
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  © 2026 Medical Diagnostic Centre. All rights reserved. | <a href="#" onclick="openAdmin()">Admin Panel</a>
+</footer>
+
+<!-- Admin Panel Modal -->
+<div id="adminPanel" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6);">
+  <div style="background:#fff; max-width:1000px; margin:40px auto; padding:20px; border-radius:10px;">
+    <h2 style="color:#0f766e">Admin Dashboard</h2>
+    <p style="font-size:14px">Manage all consultation requests</p>
+
+    <table border="1" width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse; font-size:13px">
+      <thead style="background:#ecfeff">
+        <tr>
+          <th>Patient</th>
+          <th>Mobile</th>
+          <th>Email</th>
+          <th>Consultation</th>
+          <th>Doctor</th>
+          <th>Payment</th>
+          <th>Contact</th>
+          <th>Date & Time</th>
+        </tr>
+      </thead>
+      <tbody id="adminTable"></tbody>
+    </table>
+
+    <button style="margin-top:16px" onclick="closeAdmin()">Close Panel</button>
+  </div>
+</div>
+
+<script>
+  function bookConsultation(e) {
+    e.preventDefault();
+    const data = Array.from(e.target.elements).map(el => el.value);
+    let records = JSON.parse(localStorage.getItem('consultations') || '[]');
+    records.push(data);
+    localStorage.setItem('consultations', JSON.stringify(records));
+    alert("Thank you! Your consultation request has been submitted.");
+    e.target.reset();
+  }
+
+  function openAdmin() {
+    document.getElementById('adminPanel').style.display = 'block';
+    loadAdminData();
+  }
+
+  function closeAdmin() {
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+
+  function loadAdminData() {
+    const tbody = document.getElementById('adminTable');
+    tbody.innerHTML = '';
+    const records = JSON.parse(localStorage.getItem('consultations') || '[]');
+    records.forEach(r => {
+      const tr = document.createElement('tr');
+      r.forEach(val => {
+        const td = document.createElement('td');
+        td.textContent = val;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+</script>
+
+</body>
+</html>
