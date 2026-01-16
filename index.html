@@ -251,6 +251,7 @@
           <th>Contact</th>
           <th>Date & Time</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody id="adminTable"></tbody>
@@ -258,58 +259,117 @@
   </div>
 </div>
 
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <script>
-  const ADMIN_USER = 'admin';
-  const ADMIN_PASS = 'admin123';
+  /* =========================
+     FIREBASE CONFIGURATION
+     =========================
+     Replace the values below with your real Firebase project keys
+  */
+  // Firebase configuration (Production)
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8lE7d0Gs-2XHhROU3ZWnr4yYSA_71pXk",
+    authDomain: "medical-diagnostic-centre.firebaseapp.com",
+    projectId: "medical-diagnostic-centre",
+    storageBucket: "medical-diagnostic-centre.firebasestorage.app",
+    messagingSenderId: "1061928433954",
+    appId: "1:1061928433954:web:8511a16494081a7349cd7b",
+    measurementId: "G-KWBN4ZQN4K"
+  };
 
-  if (sessionStorage.getItem('adminLogged')) openAdmin();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
+  /* =========================
+     ADMIN AUTH (FIREBASE)
+     ========================= */
   function loginAdmin() {
-    const u = document.getElementById('adminUser').value;
-    const p = document.getElementById('adminPass').value;
-    if (u === ADMIN_USER && p === ADMIN_PASS) {
-      sessionStorage.setItem('adminLogged', 'true');
-      openAdmin();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-    }
+    const email = document.getElementById('adminUser').value;
+    const password = document.getElementById('adminPass').value;
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => openAdmin())
+      .catch(() => document.getElementById('loginError').style.display = 'block');
   }
 
   function logoutAdmin() {
-    sessionStorage.removeItem('adminLogged');
-    location.reload();
+    auth.signOut().then(() => location.reload());
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) openAdmin();
+  });
+
+  /* =========================
+     BOOK CONSULTATION (DB)
+     ========================= */
+  function bookConsultation(e) {
+    e.preventDefault();
+    const f = e.target;
+
+    db.collection('consultations').add({
+      name: f[0].value,
+      mobile: f[1].value,
+      email: f[2].value,
+      consultation: f[3].value,
+      doctorType: f[4].value,
+      payment: f[5].value,
+      contact: f[6].value,
+      datetime: f[7].value,
+      concern: f[8].value,
+      status: 'Pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      alert('Consultation request submitted');
+      f.reset();
+    });
+  }
+
+  /* =========================
+     LOAD ADMIN DATA (DB)
+     ========================= */
+  function loadAdminData() {
+    const tbody = document.getElementById('adminTable');
+    tbody.innerHTML = '';
+
+    db.collection('consultations').orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        tbody.innerHTML = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const tr = document.createElement('tr');
+          [d.name, d.mobile, d.email, d.consultation, d.assignedDoctor || 'Unassigned', d.payment, d.contact, d.datetime, d.status]
+            .forEach(v => {
+              const td = document.createElement('td');
+              td.textContent = v;
+              tr.appendChild(td);
+            });
+          const actionTd = document.createElement('td');
+          const statusSel = document.createElement('select');
+          ['Pending','Confirmed','Meet Sent','Completed','Cancelled'].forEach(s=>{
+            const o=document.createElement('option'); o.value=s; o.text=s; if(s===d.status) o.selected=true; statusSel.appendChild(o);
+          });
+          statusSel.onchange=()=>db.collection('consultations').doc(doc.id).update({status:statusSel.value});
+          actionTd.appendChild(statusSel);
+          const docSel=document.createElement('select');
+          ['Dr. A','Dr. B','Dr. C'].forEach(dr=>{const o=document.createElement('option');o.value=dr;o.text=dr;if(dr===d.assignedDoctor) o.selected=true;docSel.appendChild(o);});
+          docSel.onchange=()=>db.collection('consultations').doc(doc.id).update({assignedDoctor:docSel.value});
+          actionTd.appendChild(document.createElement('br'));
+          actionTd.appendChild(docSel);
+          tr.appendChild(actionTd);
+          tbody.appendChild(tr);
+        });
+      });
   }
 
   function openAdmin() {
     document.getElementById('loginPanel').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     loadAdminData();
-  }
-
-  function bookConsultation(e) {
-    e.preventDefault();
-    const data = Array.from(e.target.elements).map(el => el.value);
-    data.push('Pending');
-    let records = JSON.parse(localStorage.getItem('consultations') || '[]');
-    records.push(data);
-    localStorage.setItem('consultations', JSON.stringify(records));
-    alert('Consultation request submitted');
-    e.target.reset();
-  }
-
-  function loadAdminData() {
-    const tbody = document.getElementById('adminTable');
-    tbody.innerHTML = '';
-    const records = JSON.parse(localStorage.getItem('consultations') || '[]');
-    records.forEach(r => {
-      const tr = document.createElement('tr');
-      r.forEach(val => {
-        const td = document.createElement('td');
-        td.textContent = val;
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
   }
 </script>
 
