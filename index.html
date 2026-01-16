@@ -1,58 +1,69 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Medical Diagnostic Centre</title>
-</head>
-<body>
+<body style="font-family:sans-serif">
 
-<h2>Book Online Consultation</h2>
+<h2>Medical Diagnostic Centre</h2>
 
-<form onsubmit="book(event)">
-  <input id="name" placeholder="Name" required><br>
-  <input id="mobile" placeholder="Mobile" required><br>
-  <input id="email" placeholder="Email" required><br>
+<h3>Patient Login</h3>
+<input id="mobile" placeholder="Mobile">
+<button onclick="loginPatient()">Login</button>
 
-  <select id="consultation">
-    <option>General</option>
-    <option>Report Review</option>
-  </select><br>
+<h3>Book Appointment</h3>
+<input id="reason" placeholder="Reason">
+<button onclick="book()">Book</button>
 
-  <select id="payment">
-    <option>Pay at Clinic</option>
-    <option>Online</option>
-  </select><br>
+<h3>My History</h3>
+<button onclick="history()">Load</button>
+<pre id="hist"></pre>
 
-  <select id="contact">
-    <option>WhatsApp</option>
-    <option>SMS</option>
-  </select><br>
+<hr>
 
-  <input id="datetime" type="datetime-local"><br>
-  <textarea id="concern" placeholder="Health concern"></textarea><br>
+<h3>Admin Login</h3>
+<input id="adminPass" type="password">
+<button onclick="loginAdmin()">Login</button>
 
-  <button>Submit</button>
-</form>
+<h3>Admin Dashboard</h3>
+<button onclick="loadAll()">Load Appointments</button>
+<pre id="all"></pre>
+
+<h3>Analytics</h3>
+<button onclick="analytics()">View</button>
+<pre id="stats"></pre>
 
 <script>
-function book(e) {
-  e.preventDefault();
+let token=null, adminToken=null;
 
-  fetch("https://YOUR_BACKEND_DOMAIN/api/booking/book", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      name: name.value,
-      mobile: mobile.value,
-      email: email.value,
-      consultation: consultation.value,
-      payment: payment.value,
-      contact: contact.value,
-      datetime: datetime.value,
-      concern: concern.value
-    })
-  })
-  .then(r => r.json())
-  .then(r => alert(r.success ? "Booked" : "Error"));
+function loginPatient(){
+ fetch("/api/patient/login",{method:"POST",headers:{'Content-Type':'application/json'},
+ body:JSON.stringify({mobile:mobile.value})})
+ .then(r=>r.json()).then(d=>token=d.token);
+}
+
+function book(){
+ fetch("/api/book",{method:"POST",
+ headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+ body:JSON.stringify({reason:reason.value})});
+}
+
+function history(){
+ fetch("/api/history",{headers:{Authorization:'Bearer '+token}})
+ .then(r=>r.json()).then(d=>hist.innerText=JSON.stringify(d,null,2));
+}
+
+function loginAdmin(){
+ fetch("/api/admin/login",{method:"POST",headers:{'Content-Type':'application/json'},
+ body:JSON.stringify({password:adminPass.value})})
+ .then(r=>r.json()).then(d=>adminToken=d.token);
+}
+
+function loadAll(){
+ fetch("/api/admin/all",{headers:{Authorization:'Bearer '+adminToken}})
+ .then(r=>r.json()).then(d=>all.innerText=JSON.stringify(d,null,2));
+}
+
+function analytics(){
+ fetch("/api/admin/analytics",{headers:{Authorization:'Bearer '+adminToken}})
+ .then(r=>r.json()).then(d=>stats.innerText=JSON.stringify(d,null,2));
 }
 </script>
 
