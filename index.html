@@ -5,131 +5,185 @@
 <title>Medical Diagnostic Centre – Online Consultation</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body { font-family: Arial, sans-serif; margin: 0; background:#f4f6f8 }
-header { background:#0b5ed7; color:white; padding:15px }
-section { padding:20px }
-.card { background:white; padding:20px; border-radius:8px; margin-bottom:20px }
-input, select, button {
-  width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc
-}
-button { background:#0b5ed7; color:white; cursor:pointer }
-button:hover { background:#094bb5 }
-table { width:100%; border-collapse:collapse }
-th,td { padding:10px; border-bottom:1px solid #ddd }
-.hidden { display:none }
-.admin { background:#fff3cd }
-</style>
+<!-- UI / Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- Google API -->
 <script src="https://apis.google.com/js/api.js"></script>
+
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<!-- Razorpay -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter;background:#f4f7fb}
+header{background:#0b5ed7;color:#fff;padding:20px}
+.container{max-width:1100px;margin:auto;padding:20px}
+.card{background:#fff;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 10px 25px rgba(0,0,0,.05)}
+h2,h3{margin-top:0}
+input,select,button{
+  width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc
+}
+button{background:#0b5ed7;color:#fff;font-weight:600;border:none;cursor:pointer}
+button:hover{opacity:.9}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #eee}
+.admin{border-left:5px solid #0b5ed7}
+.hidden{display:none}
+.badge{padding:5px 10px;border-radius:20px;font-size:12px}
+.success{background:#d1e7dd}
+.pending{background:#fff3cd}
+</style>
 </head>
 
 <body>
 
 <header>
-<h2>Medical Diagnostic Centre – Online Video Consultation</h2>
+  <h2>Medical Diagnostic Centre – Online Video Consultation</h2>
 </header>
 
-<section class="card">
-<h3>Patient Appointment Booking</h3>
+<div class="container">
+
+<!-- PATIENT -->
+<div class="card">
+<h3>Book Online Consultation</h3>
 <input id="pname" placeholder="Patient Name">
 <input id="pemail" placeholder="Email">
 <select id="doctor"></select>
 <input type="date" id="date">
 <input type="time" id="time">
-<button onclick="bookAppointment()">Book Appointment</button>
-</section>
+<button onclick="payAndBook()">Pay & Book Consultation</button>
+</div>
 
-<section class="card admin">
-<h3>Admin Panel</h3>
-<input id="adminPass" type="password" placeholder="Admin Password">
+<!-- ADMIN -->
+<div class="card admin">
+<h3>Admin Login</h3>
+<input id="adminUser" placeholder="Username">
+<input id="adminPass" type="password" placeholder="Password">
 <button onclick="loginAdmin()">Login</button>
 
 <div id="adminArea" class="hidden">
-<h4>Add Doctor</h4>
+<hr>
+<h3>Add Doctor</h3>
 <input id="dname" placeholder="Doctor Name">
 <button onclick="addDoctor()">Add Doctor</button>
 
-<h4>Appointments</h4>
+<h3>Appointments</h3>
 <table id="apptTable"></table>
 </div>
-</section>
+</div>
+
+</div>
 
 <script>
-const ADMIN_PASSWORD = "admin123";
+/* ================== CONFIG ================== */
+const ADMIN_HASH = "e10adc3949ba59abbe56e057f20f883e"; // md5("123456")
+
+const GOOGLE_CLIENT_ID = "26213355668-ss2uq0mq5mlorcjn47mekvq0m479fa6k.apps.googleusercontent.com";
+const GOOGLE_API_KEY = "AIzaSyClLGXVFOWXZVDhbfsUJ0b53C7wiaA57BE";
+
+emailjs.init("PASTE_EMAILJS_PUBLIC_KEY");
+
+/* ================== DATA ================== */
 let doctors = JSON.parse(localStorage.getItem("doctors")) || [];
 let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
-function save() {
-  localStorage.setItem("doctors", JSON.stringify(doctors));
-  localStorage.setItem("appointments", JSON.stringify(appointments));
+/* ================== UTILS ================== */
+function save(){
+ localStorage.setItem("doctors",JSON.stringify(doctors));
+ localStorage.setItem("appointments",JSON.stringify(appointments));
 }
 
-function renderDoctors() {
-  const d = document.getElementById("doctor");
-  d.innerHTML = "";
-  doctors.forEach(x => {
-    let o = document.createElement("option");
-    o.value = x;
-    o.textContent = x;
-    d.appendChild(o);
-  });
+function md5(str){
+ return CryptoJS.MD5(str).toString();
 }
 
-function addDoctor() {
-  const name = document.getElementById("dname").value;
-  if (!name) return alert("Enter doctor name");
-  doctors.push(name);
-  save();
-  renderDoctors();
-  alert("Doctor added");
+/* ================== RENDER ================== */
+function renderDoctors(){
+ const d=document.getElementById("doctor");
+ d.innerHTML="";
+ doctors.forEach(x=>{
+  let o=document.createElement("option");
+  o.textContent=x;
+  d.appendChild(o);
+ });
 }
 
-function bookAppointment() {
-  const a = {
-    id: Date.now(),
-    name: pname.value,
-    email: pemail.value,
-    doctor: doctor.value,
-    date: date.value,
-    time: time.value,
-    meet: ""
-  };
-  appointments.push(a);
-  save();
-  alert("Appointment booked");
+function renderAppointments(){
+ const t=document.getElementById("apptTable");
+ t.innerHTML="<tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Meet</th></tr>";
+ appointments.forEach(a=>{
+  t.innerHTML+=`
+  <tr>
+   <td>${a.name}</td>
+   <td>${a.doctor}</td>
+   <td>${a.date} ${a.time}</td>
+   <td>
+     ${a.meet ? `<a href="${a.meet}" target="_blank">Join</a>` :
+     `<button onclick="createMeet(${a.id})">Generate Meet</button>`}
+   </td>
+  </tr>`;
+ });
 }
 
-function loginAdmin() {
-  if (adminPass.value === ADMIN_PASSWORD) {
-    adminArea.classList.remove("hidden");
-    renderAppointments();
-  } else alert("Wrong password");
+/* ================== ADMIN ================== */
+function loginAdmin(){
+ if(md5(adminPass.value)===ADMIN_HASH){
+  adminArea.classList.remove("hidden");
+  renderAppointments();
+ }else alert("Invalid credentials");
 }
 
-function renderAppointments() {
-  const t = document.getElementById("apptTable");
-  t.innerHTML = "<tr><th>Patient</th><th>Doctor</th><th>Date</th><th>Meet</th></tr>";
-  appointments.forEach(a => {
-    t.innerHTML += `<tr>
-      <td>${a.name}</td>
-      <td>${a.doctor}</td>
-      <td>${a.date} ${a.time}</td>
-      <td>
-        ${a.meet ? `<a href="${a.meet}" target="_blank">Join</a>` :
-        `<button onclick="createMeet(${a.id})">Generate Meet</button>`}
-      </td>
-    </tr>`;
-  });
+function addDoctor(){
+ doctors.push(dname.value);
+ save(); renderDoctors();
 }
 
-function createMeet(id) {
-  alert("26213355668-ss2uq0mq5mlorcjn47mekvq0m479fa6k.apps.googleusercontent.com");
+/* ================== PAYMENT ================== */
+function payAndBook(){
+ var options={
+  key:"PASTE_RAZORPAY_KEY_ID",
+  amount:50000,
+  currency:"INR",
+  name:"Medical Diagnostic Centre",
+  description:"Online Consultation",
+  handler:function(){
+    bookAppointment();
+  }
+ };
+ new Razorpay(options).open();
 }
 
-/* Initialize */
+/* ================== BOOK ================== */
+function bookAppointment(){
+ const a={
+  id:Date.now(),
+  name:pname.value,
+  email:pemail.value,
+  doctor:doctor.value,
+  date:date.value,
+  time:time.value,
+  meet:""
+ };
+ appointments.push(a);
+ save();
+ alert("Appointment booked. Admin will generate Meet link.");
+}
+
+/* ================== GOOGLE MEET ================== */
+function createMeet(id){
+ alert("Google OAuth required.\n\nAfter OAuth, Calendar API creates Meet link.");
+}
+
+/* ================== INIT ================== */
 renderDoctors();
 </script>
+
+<!-- CryptoJS for password hashing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 </body>
 </html>
