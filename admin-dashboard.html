@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Medical Diagnostic Centre</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    header {
+      background: #0f766e;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0; font-size: 20px; }
+    header button {
+      background: #dc2626;
+      border: none;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .container {
+      padding: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      font-size: 13px;
+      text-align: left;
+    }
+    th {
+      background: #ecfeff;
+      font-weight: bold;
+    }
+    select {
+      padding: 6px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Admin Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th>Patient</th>
+        <th>Mobile</th>
+        <th>Email</th>
+        <th>Consultation</th>
+        <th>Doctor</th>
+        <th>Payment</th>
+        <th>Contact</th>
+        <th>Date & Time</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+  const token = localStorage.getItem('adminToken');
+  if (!token) window.location.href = '/admin.html';
+
+  function logout() {
+    localStorage.removeItem('adminToken');
+    window.location.href = '/admin.html';
+  }
+
+  fetch('/api/admin/consultations', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const tbody = document.getElementById('tableBody');
+    data.forEach(d => {
+      const tr = document.createElement('tr');
+
+      const fields = [d.name, d.mobile, d.email, d.consultation, d.assignedDoctor || 'Unassigned', d.payment, d.contact, d.datetime];
+      fields.forEach(v => {
+        const td = document.createElement('td');
+        td.textContent = v;
+        tr.appendChild(td);
+      });
+
+      const statusTd = document.createElement('td');
+      const statusSel = document.createElement('select');
+      ['Pending','Confirmed','Meet Sent','Completed','Cancelled'].forEach(s => {
+        const o = document.createElement('option');
+        o.value = s; o.text = s;
+        if (s === d.status) o.selected = true;
+        statusSel.appendChild(o);
+      });
+      statusTd.appendChild(statusSel);
+      tr.appendChild(statusTd);
+
+      const updateTd = document.createElement('td');
+      const btn = document.createElement('button');
+      btn.textContent = 'Save';
+      btn.onclick = () => updateStatus(d.id, statusSel.value);
+      updateTd.appendChild(btn);
+      tr.appendChild(updateTd);
+
+      tbody.appendChild(tr);
+    });
+  });
+
+  function updateStatus(id, status) {
+    fetch('/api/admin/update/' + id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ status })
+    }).then(() => alert('Status updated'));
+  }
+</script>
+
+</body>
+</html>
