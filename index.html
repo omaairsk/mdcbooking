@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical Diagnostic Centre | Domkal</title>
+  <meta name="description" content="Medical Diagnostic Centre – Trusted diagnostics and doctor consultation in Domkal, Murshidabad. Book appointments, view doctors, and find us on Google Maps." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#0d6efd;
+      --secondary:#0bbcd6;
+      --dark:#0f172a;
+      --light:#f8fafc;
+      --muted:#64748b;
+      --accent:#22c55e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:var(--light);
+      color:var(--dark);
+      line-height:1.6;
+    }
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+
+    /* Header */
+    header{
+      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      color:#fff;
+      padding:18px 0;
+      position:sticky;
+      top:0;
+      z-index:1000;
+    }
+    .container{width:92%;max-width:1200px;margin:auto}
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .logo{
+      font-size:1.5rem;
+      font-weight:700;
+      letter-spacing:0.5px;
+    }
+    .logo span{font-weight:300}
+    .nav ul{
+      display:flex;
+      gap:24px;
+      list-style:none;
+    }
+    .nav ul li a{
+      font-weight:500;
+      opacity:0.95;
+    }
+    .nav ul li a:hover{opacity:1;text-decoration:underline}
+
+    /* Hero */
+    .hero{
+      background:linear-gradient(rgba(15,23,42,0.55),rgba(15,23,42,0.55)),url('https://images.unsplash.com/photo-1580281657521-4c9f6f89a8b5?auto=format&fit=crop&w=1600&q=80');
+      background-size:cover;
+      background-position:center;
+      color:#fff;
+      padding:120px 0 100px;
+      text-align:center;
+    }
+    .hero h1{
+      font-size:2.8rem;
+      margin-bottom:12px;
+    }
+    .hero p{
+      max-width:700px;
+      margin:0 auto 28px;
+      opacity:0.95;
+    }
+    .btn{
+      display:inline-block;
+      padding:12px 28px;
+      border-radius:30px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:600;
+      transition:transform .2s,box-shadow .2s;
+    }
+    .btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 20px rgba(0,0,0,.2);
+    }
+
+    /* Sections */
+    section{padding:70px 0}
+    .section-title{
+      text-align:center;
+      margin-bottom:50px;
+    }
+    .section-title h2{
+      font-size:2.1rem;
+      margin-bottom:10px;
+    }
+    .section-title p{color:var(--muted)}
+
+    /* About */
+    .about{
+      display:grid;
+      grid-template-columns:1.1fr 0.9fr;
+      gap:40px;
+      align-items:center;
+    }
+    .about-card{
+      background:#fff;
+      padding:30px;
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(2,8,23,.08);
+    }
+    .about-card ul{margin-top:16px}
+    .about-card ul li{
+      list-style:none;
+      margin-bottom:10px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .about-card i{color:var(--accent);margin-top:4px}
+
+    /* Doctors */
+    .doctors{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:28px;
+    }
+    .doctor-card{
+      background:#fff;
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 15px 35px rgba(2,8,23,.08);
+      transition:transform .2s;
+    }
+    .doctor-card:hover{transform:translateY(-4px)}
+    .doctor-card h3{margin-bottom:6px}
+    .doctor-card p{color:var(--muted);font-size:0.95rem}
+    .doctor-meta{margin-top:14px;font-size:0.9rem}
+    .doctor-meta strong{color:var(--dark)}
+
+    /* Contact */
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:40px;
+    }
+    .contact-card{
+      background:#fff;
+      padding:30px;
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(2,8,23,.08);
+    }
+    .contact-card h3{margin-bottom:18px}
+    .contact-item{
+      display:flex;
+      gap:14px;
+      margin-bottom:14px;
+      align-items:flex-start;
+    }
+    .contact-item i{
+      font-size:1.2rem;
+      color:var(--primary);
+      margin-top:4px;
+    }
+    iframe{
+      width:100%;
+      height:320px;
+      border:0;
+      border-radius:16px;
+    }
+
+    /* Footer */
+    footer{
+      background:#020617;
+      color:#cbd5f5;
+      padding:30px 0;
+      margin-top:60px;
+    }
+    footer .footer-grid{
+      display:grid;
+      grid-template-columns:1fr auto;
+      align-items:center;
+      gap:20px;
+    }
+    footer p{font-size:0.9rem}
+    .social a{
+      margin-left:12px;
+      font-size:1.2rem;
+      color:#cbd5f5;
+    }
+    .social a:hover{color:#fff}
+
+    /* WhatsApp Floating */
+    .whatsapp{
+      position:fixed;
+      bottom:20px;
+      right:20px;
+      background:#25d366;
+      color:#fff;
+      width:60px;
+      height:60px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.8rem;
+      box-shadow:0 10px 25px rgba(0,0,0,.25);
+      z-index:2000;
+    }
+
+    @media(max-width:900px){
+      .about{grid-template-columns:1fr}
+      .contact-grid{grid-template-columns:1fr}
+      .nav ul{display:none}
+      .hero h1{font-size:2.2rem}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">Medical <span>Diagnostic Centre</span></div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#doctors">Doctors</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Trusted Medical Diagnostics & Consultation</h1>
+    <p>Providing reliable diagnostic services and expert doctor consultations in Domkal, Murshidabad with professionalism, care, and modern medical standards.</p>
+    <a href="#contact" class="btn">Contact Us</a>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="section-title">
+      <h2>About Us</h2>
+      <p>Your health is our priority</p>
+    </div>
+    <div class="about">
+      <div class="about-card">
+        <p><strong>Medical Diagnostic Centre</strong> is committed to delivering accurate diagnostics and quality medical consultations. We focus on patient-centric care, ethical practice, and dependable medical reporting.</p>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Modern diagnostic facilities</li>
+          <li><i class="fa-solid fa-check"></i> Experienced & certified doctors</li>
+          <li><i class="fa-solid fa-check"></i> Clean, safe & patient-friendly environment</li>
+        </ul>
+      </div>
+      <div class="about-card">
+        <img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=1200&q=80" alt="Medical Diagnostic Centre">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="doctors" style="background:#f1f5f9">
+  <div class="container">
+    <div class="section-title">
+      <h2>Our Doctors</h2>
+      <p>Qualified, experienced, and trusted medical professionals</p>
+    </div>
+    <div class="doctors">
+      <div class="doctor-card">
+        <h3>Dr. Prasenjit Majumdar</h3>
+        <p>M.B.B.S (KOL), MD (WBUHS)</p>
+        <div class="doctor-meta">
+          <p><strong>Specialty:</strong> General Physician</p>
+          <p><strong>Regd. No:</strong> 55283 (WBMC)</p>
+        </div>
+      </div>
+      <div class="doctor-card">
+        <h3>Dr. Satyam</h3>
+        <p>M.B.B.S, M.D, D.N.B (DGO), PCPNDT</p>
+        <div class="doctor-meta">
+          <p><strong>Specialty:</strong> Obstetrics & Gynaecology, Infertility Specialist</p>
+          <p>Ex Senior Resident, AIIMS New Delhi</p>
+          <p>Attached to Domkal SDH & SS Hospital</p>
+          <p><strong>Regd. No:</strong> 103539 (WBMC)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="section-title">
+      <h2>Contact & Location</h2>
+      <p>We are here to assist you</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <h3>Get in Touch</h3>
+        <div class="contact-item">
+          <i class="fa-solid fa-location-dot"></i>
+          <p>DOMKAL HOSPITAL MORE, DOMKAL, MURSHIDABAD, WEST BENGAL – 742303</p>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-phone"></i>
+          <p>+91 9434880573<br>+91 8001358535 (Reception)</p>
+        </div>
+        <div class="contact-item">
+          <i class="fa-solid fa-envelope"></i>
+          <p>help.medicaldiagnosticcentre@gmail.com</p>
+        </div>
+      </div>
+      <div class="contact-card">
+        <h3>Find Us on Map</h3>
+        <iframe loading="lazy" allowfullscreen src="https://www.google.com/maps?q=DOMKAL%20HOSPITAL%20MORE%20DOMKAL%20MURSHIDABAD%20WEST%20BENGAL%20742303&output=embed"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <p>© 2026 Medical Diagnostic Centre. All Rights Reserved.</p>
+    <div class="social">
+      <a href="https://wa.me/919434880573" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="mailto:help.medicaldiagnosticcentre@gmail.com"><i class="fa-solid fa-envelope"></i></a>
+    </div>
+  </div>
+</footer>
+
+<a class="whatsapp" href="https://wa.me/919434880573" target="_blank" title="Chat on WhatsApp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+</body>
+</html>
