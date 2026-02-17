@@ -70,14 +70,14 @@
         #loader .logo {
             width: 120px;
             height: 120px;
-            /* Placeholder medical logo since local file.jpg is unavailable */
+            /* Placeholder medical logo */
             background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=200&h=200'); 
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            border-radius: 50%; /* circular logo */
+            border-radius: 50%;
             border: 3px solid #e6eef6;
-            box-shadow: 0 0 15px rgba(13, 148, 136, 0.2); /* Teal shadow */
+            box-shadow: 0 0 15px rgba(13, 148, 136, 0.2);
             animation: pulse 1.8s ease-in-out infinite;
             margin-bottom: 16px;
         }
@@ -90,7 +90,7 @@
             height: 48px;
             border-radius: 50%;
             border: 6px solid #eee;
-            border-top-color: #0d9488; /* Teal-600 */
+            border-top-color: #0d9488;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -112,7 +112,6 @@
     <script>
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
-            // Slight delay to ensure React mounts smoothly behind it
             setTimeout(() => {
                 loader.style.opacity = '0';
                 setTimeout(() => loader.remove(), 600);
@@ -131,13 +130,12 @@
             Menu, X, CreditCard, Lock, Search, Plus, Trash2, 
             LayoutDashboard, Users, FileText, Settings, Edit, Filter,
             TestTube, Activity, HeartPulse, Scan, FlaskConical, Syringe,
-            AlertTriangle
+            AlertTriangle, Wifi, WifiOff
         } from 'lucide-react';
         import { motion, AnimatePresence } from 'framer-motion';
         import { createClient } from '@supabase/supabase-js';
 
         // --- Supabase Configuration ---
-        // Updated with the details you provided
         const SUPABASE_URL = "https://snjjxfrczwjxveakyifv.supabase.co".trim(); 
         const SUPABASE_ANON_KEY = "sb_publishable_KGrcuGLp1fhQ7bBscL-hpA_GEi7O-Zb".trim();
 
@@ -146,7 +144,6 @@
         try {
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log("Supabase initialized with URL:", SUPABASE_URL);
             }
         } catch (error) {
             console.error("Supabase init error:", error);
@@ -162,6 +159,7 @@
             facebook: "fb.com/centre.medicaldiagnostic"
         };
 
+        // UPDATED FEES TO 300
         const INITIAL_DOCTORS = [
             {
                 id: 1,
@@ -169,7 +167,7 @@
                 specialty: "Gynecologist",
                 qualification: "MBBS, DGO",
                 image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300&h=300",
-                fee: 500,
+                fee: 300, // Updated
                 available: true
             },
             {
@@ -178,7 +176,7 @@
                 specialty: "General Physician",
                 qualification: "MD Medicine",
                 image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300&h=300",
-                fee: 600,
+                fee: 300, // Updated
                 available: true
             }
         ];
@@ -239,20 +237,22 @@
 
         // --- Sub-Components ---
 
-        const ConfigBanner = () => (
+        const ConfigBanner = ({ isOnline }) => (
+            !isOnline ? (
             <div className="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-sm text-center flex items-center justify-center gap-2">
-                <AlertTriangle size={16} />
+                <WifiOff size={16} />
                 <span>
-                    <strong>Offline Mode:</strong> Supabase connection failed. Using local storage. Check API Keys.
+                    <strong>Offline Mode:</strong> Changes are saved locally. Connect to Supabase to sync across devices.
                 </span>
             </div>
+            ) : null
         );
 
         const Navbar = ({ view, setView, showMobileMenu, setShowMobileMenu }) => (
             <nav className="bg-white shadow-md sticky top-0 z-40">
                 <div className="bg-teal-700 text-white text-xs py-1 px-4 overflow-hidden">
-                    <div className="max-w-7xl mx-auto flex justify-between items-center">
-                        <p className="animate-pulse flex items-center gap-2">
+                    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+                        <p className="animate-pulse flex items-center gap-2 mb-1 md:mb-0">
                             <Clock size={12} /> Emergency? Call: {CONTACT_INFO.reception}
                         </p>
                         <div className="flex gap-4">
@@ -268,9 +268,9 @@
 
                 <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                     <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
-                        <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg">M</div>
+                        <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shrink-0">M</div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-800 leading-tight">Medical Diagnostic<br/><span className="text-teal-600">Centre</span></h1>
+                            <h1 className="text-lg md:text-xl font-bold text-gray-800 leading-tight">Medical Diagnostic<br/><span className="text-teal-600">Centre</span></h1>
                         </div>
                     </div>
 
@@ -284,8 +284,8 @@
                         </button>
                     </div>
 
-                    <button className="md:hidden text-gray-600" onClick={() => setShowMobileMenu(!showMobileMenu)}>
-                        {showMobileMenu ? <X /> : <Menu />}
+                    <button className="md:hidden text-gray-600 p-2" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+                        {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
 
@@ -315,19 +315,19 @@
             }, [doctors.length]);
 
             return (
-                <div className="relative bg-gradient-to-r from-teal-50 to-blue-50 py-20 px-4 overflow-hidden">
+                <div className="relative bg-gradient-to-r from-teal-50 to-blue-50 py-12 md:py-20 px-4 overflow-hidden">
                     <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
-                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="flex-1 z-10">
+                        <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="flex-1 z-10 text-center md:text-left">
                             <div className="inline-block bg-teal-100 text-teal-800 px-4 py-1 rounded-full text-sm font-semibold mb-6">Trusted Healthcare in Domkal</div>
                             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">Your Health is Our <br/> <span className="text-teal-600">Top Priority</span></h1>
-                            <p className="text-lg text-gray-600 mb-8 max-w-lg">Experience world-class diagnostics and expert consultation. Book appointments with top specialists seamlessly.</p>
-                            <div className="flex gap-4">
-                                <button onClick={() => setView('booking')} className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2">Book Appointment <ChevronRight size={20} /></button>
-                                <a href={`tel:${CONTACT_INFO.mobile}`} className="bg-white text-gray-700 border border-gray-200 hover:border-teal-500 px-8 py-3 rounded-full text-lg font-semibold shadow-sm hover:shadow-md transition-all flex items-center gap-2"><Phone size={20} /> Call Now</a>
+                            <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto md:mx-0">Experience world-class diagnostics and expert consultation. Book appointments with top specialists seamlessly.</p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                <button onClick={() => setView('booking')} className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">Book Appointment <ChevronRight size={20} /></button>
+                                <a href={`tel:${CONTACT_INFO.mobile}`} className="bg-white text-gray-700 border border-gray-200 hover:border-teal-500 px-8 py-3 rounded-full text-lg font-semibold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2"><Phone size={20} /> Call Now</a>
                             </div>
                         </motion.div>
                         
-                        <div className="flex-1 relative h-[400px] w-full flex items-center justify-center">
+                        <div className="flex-1 relative h-[300px] md:h-[400px] w-full flex items-center justify-center mt-8 md:mt-0">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
                             <div className="absolute -bottom-8 left-0 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
                             
@@ -485,7 +485,7 @@
                         <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Specialists</h2>
                         <p className="text-gray-600 max-w-2xl mx-auto">Meet our experienced team of doctors dedicated to providing the best healthcare services.</p>
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {doctors.map(doc => <DoctorCard key={doc.id} doc={doc} onBook={startBooking} />)}
                     </div>
                 </div>
@@ -501,7 +501,7 @@
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${bookingStep >= 1 ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
                 </div>
                 {!selectedDoctor ? (
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {doctors.map(doc => (
                             <div key={doc.id} onClick={() => startBooking(doc)} className="cursor-pointer border-2 border-transparent hover:border-teal-500 rounded-2xl transition-all">
                                 <DoctorCard doc={doc} onBook={startBooking} />
@@ -586,7 +586,7 @@
             role, handleLogout, bookings, doctors, setDoctors, 
             handleAdminAction, handleDeleteDoctor, handleSaveDoctor,
             adminTab, setAdminTab, editingDoctor, setEditingDoctor,
-            bookingFilter, setBookingFilter 
+            bookingFilter, setBookingFilter, isOnline 
         }) => {
             const today = new Date().toISOString().split('T')[0];
             const todaysBookings = bookings.filter(b => b.timestamp.startsWith(today));
@@ -599,8 +599,8 @@
             }).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             return (
-                <div className="flex h-screen bg-gray-100">
-                    <div className="w-64 bg-gray-900 text-gray-400 flex flex-col">
+                <div className="flex h-screen bg-gray-100 font-sans">
+                    <div className="w-64 bg-gray-900 text-gray-400 flex flex-col hidden md:flex">
                         <div className="p-6 text-white font-bold text-xl flex items-center gap-2">
                             <div className="w-8 h-8 bg-teal-600 rounded flex items-center justify-center">A</div>
                             Admin Panel
@@ -630,14 +630,23 @@
 
                     <div className="flex-1 overflow-auto">
                         <div className="p-8">
-                            <header className="mb-8 flex justify-between items-center">
-                                <h1 className="text-2xl font-bold text-gray-800 capitalize">{adminTab}</h1>
-                                <div className="text-sm text-gray-500">Last updated: {new Date().toLocaleTimeString()}</div>
+                            <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-800 capitalize flex items-center gap-3">
+                                        {adminTab}
+                                        <span className={`text-xs px-2 py-1 rounded-full border ${isOnline ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'} flex items-center gap-1`}>
+                                            {isOnline ? <Wifi size={12}/> : <WifiOff size={12}/>}
+                                            {isOnline ? 'Online' : 'Offline'}
+                                        </span>
+                                    </h1>
+                                    <div className="text-sm text-gray-500">Last updated: {new Date().toLocaleTimeString()}</div>
+                                </div>
+                                <button onClick={handleLogout} className="md:hidden flex items-center gap-2 text-red-500 text-sm"><LogOut size={16}/> Logout</button>
                             </header>
 
                             {adminTab === 'overview' && (
                                 <>
-                                    <div className="grid md:grid-cols-3 gap-6 mb-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                                             <div className="text-gray-500 text-sm font-medium mb-1">Total Bookings</div>
                                             <div className="text-3xl font-bold text-gray-900">{bookings.length}</div>
@@ -662,12 +671,12 @@
                                         ) : (
                                             <div className="space-y-3">
                                                 {pendingBookings.slice(0, 5).map(b => (
-                                                    <div key={b.id} className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                                                    <div key={b.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-100 gap-3">
                                                         <div>
                                                             <div className="font-medium text-gray-900">{b.name}</div>
                                                             <div className="text-xs text-gray-500">{b.doctor} • {b.time}</div>
                                                         </div>
-                                                        <button onClick={() => handleAdminAction(b.id, 'complete')} className="text-xs bg-white border border-yellow-200 text-yellow-700 px-3 py-1 rounded hover:bg-yellow-100">Mark Complete</button>
+                                                        <button onClick={() => handleAdminAction(b.id, 'complete')} className="text-xs bg-white border border-yellow-200 text-yellow-700 px-3 py-1 rounded hover:bg-yellow-100 w-full sm:w-auto text-center">Mark Complete</button>
                                                     </div>
                                                 ))}
                                             </div>
@@ -678,74 +687,76 @@
 
                             {adminTab === 'bookings' && (
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                                    <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                                        <div className="flex gap-2">
-                                            <button onClick={() => setBookingFilter('all')} className={`px-3 py-1 text-sm rounded-full ${bookingFilter === 'all' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>All</button>
-                                            <button onClick={() => setBookingFilter('today')} className={`px-3 py-1 text-sm rounded-full ${bookingFilter === 'today' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Today</button>
-                                            <button onClick={() => setBookingFilter('upcoming')} className={`px-3 py-1 text-sm rounded-full ${bookingFilter === 'upcoming' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Upcoming</button>
+                                    <div className="p-4 border-b flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50">
+                                        <div className="flex gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
+                                            <button onClick={() => setBookingFilter('all')} className={`px-3 py-1 text-sm rounded-full whitespace-nowrap ${bookingFilter === 'all' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>All</button>
+                                            <button onClick={() => setBookingFilter('today')} className={`px-3 py-1 text-sm rounded-full whitespace-nowrap ${bookingFilter === 'today' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Today</button>
+                                            <button onClick={() => setBookingFilter('upcoming')} className={`px-3 py-1 text-sm rounded-full whitespace-nowrap ${bookingFilter === 'upcoming' ? 'bg-white shadow text-teal-600 font-medium' : 'text-gray-500 hover:text-gray-700'}`}>Upcoming</button>
                                         </div>
-                                        <div className="relative">
+                                        <div className="relative w-full sm:w-auto">
                                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                                            <input placeholder="Search..." className="pl-9 pr-4 py-1.5 text-sm border rounded-lg outline-none focus:border-teal-500"/>
+                                            <input placeholder="Search..." className="w-full sm:w-64 pl-9 pr-4 py-1.5 text-sm border rounded-lg outline-none focus:border-teal-500"/>
                                         </div>
                                     </div>
-                                    <table className="w-full text-sm text-left">
-                                        <thead className="bg-gray-50 text-gray-500 font-medium border-b">
-                                            <tr>
-                                                <th className="px-6 py-3">Patient</th>
-                                                <th className="px-6 py-3">Doctor</th>
-                                                <th className="px-6 py-3">Date/Time</th>
-                                                <th className="px-6 py-3">Status</th>
-                                                <th className="px-6 py-3 text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y">
-                                            {filteredBookings.length === 0 ? <tr><td colSpan="5" className="p-8 text-center text-gray-400">No bookings found.</td></tr> :
-                                            filteredBookings.map(book => (
-                                                <tr key={book.id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-3">
-                                                        <div className="font-medium text-gray-900">{book.name}</div>
-                                                        <div className="text-xs text-gray-500">{book.phone}</div>
-                                                    </td>
-                                                    <td className="px-6 py-3">{book.doctor}</td>
-                                                    <td className="px-6 py-3">
-                                                        <div className="text-gray-900">{book.date}</div>
-                                                        <div className="text-xs text-gray-500">{book.time}</div>
-                                                    </td>
-                                                    <td className="px-6 py-3">
-                                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${book.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                                                            {book.status}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-3 text-right space-x-2">
-                                                        {book.status !== 'Completed' && (
-                                                            <button onClick={() => handleAdminAction(book.id, 'complete')} className="text-teal-600 hover:bg-teal-50 p-1 rounded" title="Mark Done"><CheckCircle size={16}/></button>
-                                                        )}
-                                                        {role === 'admin' && (
-                                                            <button onClick={() => handleAdminAction(book.id, 'delete')} className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete"><Trash2 size={16}/></button>
-                                                        )}
-                                                    </td>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left min-w-[600px]">
+                                            <thead className="bg-gray-50 text-gray-500 font-medium border-b">
+                                                <tr>
+                                                    <th className="px-6 py-3">Patient</th>
+                                                    <th className="px-6 py-3">Doctor</th>
+                                                    <th className="px-6 py-3">Date/Time</th>
+                                                    <th className="px-6 py-3">Status</th>
+                                                    <th className="px-6 py-3 text-right">Actions</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody className="divide-y">
+                                                {filteredBookings.length === 0 ? <tr><td colSpan="5" className="p-8 text-center text-gray-400">No bookings found.</td></tr> :
+                                                filteredBookings.map(book => (
+                                                    <tr key={book.id} className="hover:bg-gray-50">
+                                                        <td className="px-6 py-3">
+                                                            <div className="font-medium text-gray-900">{book.name}</div>
+                                                            <div className="text-xs text-gray-500">{book.phone}</div>
+                                                        </td>
+                                                        <td className="px-6 py-3">{book.doctor}</td>
+                                                        <td className="px-6 py-3">
+                                                            <div className="text-gray-900">{book.date}</div>
+                                                            <div className="text-xs text-gray-500">{book.time}</div>
+                                                        </td>
+                                                        <td className="px-6 py-3">
+                                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${book.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                                                                {book.status}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-3 text-right space-x-2">
+                                                            {book.status !== 'Completed' && (
+                                                                <button onClick={() => handleAdminAction(book.id, 'complete')} className="text-teal-600 hover:bg-teal-50 p-1 rounded" title="Mark Done"><CheckCircle size={16}/></button>
+                                                            )}
+                                                            {role === 'admin' && (
+                                                                <button onClick={() => handleAdminAction(book.id, 'delete')} className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete"><Trash2 size={16}/></button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             )}
 
                             {adminTab === 'doctors' && (
-                                <div className="grid md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div className="md:col-span-2 space-y-4">
                                         {doctors.map(doc => (
-                                            <div key={doc.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center group">
-                                                <div className="flex items-center gap-4">
-                                                    <img src={doc.image} className="w-12 h-12 rounded-full object-cover" alt=""/>
+                                            <div key={doc.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-center group gap-4">
+                                                <div className="flex items-center gap-4 w-full sm:w-auto">
+                                                    <img src={doc.image} className="w-12 h-12 rounded-full object-cover shrink-0" alt=""/>
                                                     <div>
                                                         <div className="font-bold text-gray-900">{doc.name}</div>
                                                         <div className="text-sm text-gray-500">{doc.specialty} • {doc.qualification}</div>
                                                         <div className="text-xs font-bold text-teal-600 mt-1">₹{doc.fee}</div>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex gap-2 w-full sm:w-auto justify-end sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     <button onClick={() => setEditingDoctor(doc)} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit size={16}/></button>
                                                     {role === 'admin' && <button onClick={() => handleDeleteDoctor(doc.id)} className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 size={16}/></button>}
                                                 </div>
@@ -771,7 +782,7 @@
                                                 </div>
                                                 <div>
                                                     <label className="text-xs font-bold text-gray-500 uppercase">Consultation Fee (₹)</label>
-                                                    <input required type="number" name="fee" defaultValue={editingDoctor?.fee} className="w-full p-2 border rounded-lg text-sm" placeholder="0.00"/>
+                                                    <input required type="number" name="fee" defaultValue={editingDoctor?.fee || 300} className="w-full p-2 border rounded-lg text-sm" placeholder="300"/>
                                                 </div>
                                                 <div className="flex gap-2 pt-2">
                                                     {editingDoctor && <button type="button" onClick={() => setEditingDoctor(null)} className="flex-1 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>}
@@ -867,6 +878,7 @@
             const [paymentModal, setPaymentModal] = useState(false);
             const [loginError, setLoginError] = useState('');
             const [lastBooking, setLastBooking] = useState(null);
+            const [isOnline, setIsOnline] = useState(false);
             const hasSeededRef = useRef(false);
 
             // Admin Specific State
@@ -886,33 +898,57 @@
                 const connectSupabase = async () => {
                     if (!supabase) return;
 
-                    const fetchDoctors = async () => {
+                    try {
                         const { data, error } = await supabase.from('doctors').select('*');
-                        if (!error && data && data.length > 0) {
-                            setDoctors(data);
-                            localStorage.setItem('mdc_doctors', JSON.stringify(data)); // Sync
-                        }
-                    };
-
-                    const fetchBookings = async () => {
-                        const { data, error } = await supabase.from('bookings').select('*');
                         if (!error && data) {
-                            setBookings(data);
-                            localStorage.setItem('mdc_bookings', JSON.stringify(data)); // Sync
+                            if (data.length > 0) {
+                                setDoctors(data);
+                                localStorage.setItem('mdc_doctors', JSON.stringify(data)); 
+                            } else if (!hasSeededRef.current) {
+                                // Seed if empty
+                                hasSeededRef.current = true;
+                                await supabase.from('doctors').insert(INITIAL_DOCTORS);
+                            }
+                            setIsOnline(true);
+                        } else {
+                            console.warn("Supabase fetch failed (likely table missing or RLS blocked):", error);
+                            setIsOnline(false);
                         }
-                    };
 
-                    fetchDoctors();
-                    fetchBookings();
+                        const { data: bData, error: bError } = await supabase.from('bookings').select('*');
+                        if (!bError && bData) {
+                            setBookings(bData);
+                            localStorage.setItem('mdc_bookings', JSON.stringify(bData)); 
+                        }
+                    } catch (err) {
+                        console.error("Connection failed", err);
+                        setIsOnline(false);
+                    }
 
+                    // Setup Realtime Subscriptions
                     const doctorSubscription = supabase
                         .channel('public:doctors')
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'doctors' }, fetchDoctors)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'doctors' }, (payload) => {
+                            // Simple re-fetch strategy for consistency
+                            supabase.from('doctors').select('*').then(({ data }) => {
+                                if (data) {
+                                    setDoctors(data);
+                                    localStorage.setItem('mdc_doctors', JSON.stringify(data));
+                                }
+                            });
+                        })
                         .subscribe();
 
                     const bookingSubscription = supabase
                         .channel('public:bookings')
-                        .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, fetchBookings)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
+                            supabase.from('bookings').select('*').then(({ data }) => {
+                                if (data) {
+                                    setBookings(data);
+                                    localStorage.setItem('mdc_bookings', JSON.stringify(data));
+                                }
+                            });
+                        })
                         .subscribe();
 
                     return () => {
@@ -926,11 +962,11 @@
 
             // Save to LocalStorage whenever state changes (Fallback mode)
             useEffect(() => {
-                if (!supabase) {
+                if (!isOnline) {
                     localStorage.setItem('mdc_bookings', JSON.stringify(bookings));
                     localStorage.setItem('mdc_doctors', JSON.stringify(doctors));
                 }
-            }, [bookings, doctors]);
+            }, [bookings, doctors, isOnline]);
 
             useEffect(() => {
                 window.scrollTo(0,0);
@@ -973,7 +1009,6 @@
 
             const confirmPayment = async () => {
                 const newBooking = {
-                    id: Date.now().toString(), // Temp ID for local
                     name: formData.name,
                     age: formData.age,
                     phone: formData.phone,
@@ -985,15 +1020,16 @@
                     timestamp: new Date().toISOString()
                 };
 
-                if (supabase) {
+                if (isOnline && supabase) {
                     // Try to save to Supabase
-                    // Note: Removed 'id' so Supabase auto-generates it if column is serial/uuid
-                    const { id, ...bookingData } = newBooking; 
-                    const { error } = await supabase.from('bookings').insert([bookingData]);
-                    if (error) console.error("Supabase Save Error", error);
+                    const { error } = await supabase.from('bookings').insert([newBooking]);
+                    if (error) {
+                        console.error("Supabase Save Error", error);
+                        alert("Could not save to online database. Saving locally.");
+                    }
                 }
                 
-                // Always update local state for immediate feedback
+                // Optimistic UI update
                 setBookings(prev => [newBooking, ...prev]);
                 setLastBooking(newBooking); 
                 setPaymentModal(false);
@@ -1003,13 +1039,14 @@
             };
 
             const handleAdminAction = async (id, action) => {
+                // Optimistic update
                 if (action === 'delete') {
                     if(window.confirm("Are you sure you want to delete this booking?")) {
-                        if (supabase) await supabase.from('bookings').delete().eq('id', id);
+                        if (isOnline && supabase) await supabase.from('bookings').delete().eq('id', id); // Note: Assuming ID matches remote
                         setBookings(prev => prev.filter(b => b.id !== id));
                     }
                 } else if (action === 'complete') {
-                    if (supabase) await supabase.from('bookings').update({ status: 'Completed' }).eq('id', id);
+                    if (isOnline && supabase) await supabase.from('bookings').update({ status: 'Completed' }).eq('id', id);
                     setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'Completed' } : b));
                 }
             };
@@ -1028,9 +1065,11 @@
                     available: true
                 };
 
-                if (supabase) {
-                    const { id, ...remoteData } = docData; // Let DB handle ID for new inserts
+                if (isOnline && supabase) {
+                    const { id, ...remoteData } = docData; 
                     if (editingDoctor) {
+                        // Check if ID is integer (from DB) or timestamp (local)
+                        // If seeded from initial, usually ID is int. 
                         await supabase.from('doctors').update(remoteData).eq('id', editingDoctor.id);
                     } else {
                         await supabase.from('doctors').insert([remoteData]);
@@ -1048,7 +1087,7 @@
 
             const handleDeleteDoctor = async (id) => {
                 if(window.confirm("Delete this doctor? This cannot be undone.")) {
-                    if (supabase) await supabase.from('doctors').delete().eq('id', id);
+                    if (isOnline && supabase) await supabase.from('doctors').delete().eq('id', id);
                     setDoctors(prev => prev.filter(d => d.id !== id));
                 }
             };
@@ -1072,13 +1111,14 @@
                         setEditingDoctor={setEditingDoctor}
                         bookingFilter={bookingFilter}
                         setBookingFilter={setBookingFilter}
+                        isOnline={isOnline}
                     />
                 );
             }
 
             return (
                 <div className="font-sans text-gray-800 bg-white min-h-screen flex flex-col">
-                    {!supabase && <ConfigBanner />}
+                    <ConfigBanner isOnline={isOnline} />
                     <Navbar view={view} setView={setView} showMobileMenu={showMobileMenu} setShowMobileMenu={setShowMobileMenu} />
                     
                     <main className="flex-grow bg-gray-50">
