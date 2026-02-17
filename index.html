@@ -15,14 +15,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Import Map: This fixes the "useContext" error by forcing a single React version -->
+    <!-- Import Map -->
     <script type="importmap">
     {
       "imports": {
         "react": "https://esm.sh/react@18.2.0",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "lucide-react": "https://esm.sh/lucide-react@0.263.1?deps=react@18.2.0",
-        "framer-motion": "https://esm.sh/framer-motion@10.12.16?deps=react@18.2.0,react-dom@18.2.0"
+        "framer-motion": "https://esm.sh/framer-motion@10.12.16?deps=react@18.2.0,react-dom@18.2.0",
+        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
       }
     }
     </script>
@@ -53,6 +56,8 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+
 
  /* ========== Loader ========== */
     #loader {
@@ -93,7 +98,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-      
+        
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -103,7 +108,7 @@
 
     <!-- React Application Logic -->
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
+        import React, { useState, useEffect, useRef } from 'react';
         import ReactDOM from 'react-dom/client';
         import { 
             Phone, MapPin, Mail, MessageCircle, Facebook, 
@@ -114,6 +119,40 @@
             TestTube, Activity, HeartPulse, Scan, FlaskConical, Syringe
         } from 'lucide-react';
         import { motion, AnimatePresence } from 'framer-motion';
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+
+        // --- Firebase Initialization Strategy ---
+        let firebaseConfig;
+        let appId;
+        
+        // Push Certificate (Saved for future service worker implementation)
+        const VAPID_KEY = "BEq34ELrcGLQKuoLdqdPf4oQEFAFV7JIxrQy-vDb1aZ1rHofdzWRkxs_wk-D2jK88ChHD_LkfUaZOC7NJAJREfk";
+
+        if (typeof __firebase_config !== 'undefined') {
+            // Internal Preview Environment
+            firebaseConfig = JSON.parse(__firebase_config);
+            appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        } else {
+            // YOUR LIVE FIREBASE CONFIGURATION (mdcbooking-324f4)
+            firebaseConfig = {
+                apiKey: "AIzaSyA4fQ1Lh0O0Eet73MqVbtYWtCbK4te7lxg",
+                authDomain: "mdcbooking-324f4.firebaseapp.com",
+                databaseURL: "https://mdcbooking-324f4-default-rtdb.firebaseio.com",
+                projectId: "mdcbooking-324f4",
+                storageBucket: "mdcbooking-324f4.firebasestorage.app",
+                messagingSenderId: "666579014366",
+                appId: "1:666579014366:web:d11ed6ef43c7c6e3c5a84f",
+                measurementId: "G-R3HPS6G80F"
+            };
+            // Use the project ID as the root collection for your live data
+            appId = "mdcbooking-324f4"; 
+        }
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // --- Configuration & Constants ---
         const CONTACT_INFO = {
@@ -121,13 +160,12 @@
             reception: "+91 8001358535",
             mobile: "+91 9434880573",
             email: "help.medicaldiagnosticcentre@gmail.com",
-            whatsapp: "+918001358535", // WhatsApp format
+            whatsapp: "+918001358535", 
             facebook: "fb.com/centre.medicaldiagnostic"
         };
 
         const INITIAL_DOCTORS = [
             {
-                id: 1,
                 name: "Dr. Satyam",
                 specialty: "Gynecologist",
                 qualification: "MBBS, DGO",
@@ -136,7 +174,6 @@
                 available: true
             },
             {
-                id: 2,
                 name: "Dr. Prasezit Mazumdar",
                 specialty: "General Physician",
                 qualification: "MD Medicine",
@@ -811,7 +848,7 @@
             // State
             const [view, setView] = useState('home'); 
             const [role, setRole] = useState('guest'); 
-            const [doctors, setDoctors] = useState(INITIAL_DOCTORS);
+            const [doctors, setDoctors] = useState([]); // Empty initially, loaded from DB
             const [bookings, setBookings] = useState([]);
             const [selectedDoctor, setSelectedDoctor] = useState(null);
             const [bookingStep, setBookingStep] = useState(0); 
@@ -821,24 +858,71 @@
             const [paymentModal, setPaymentModal] = useState(false);
             const [loginError, setLoginError] = useState('');
             const [lastBooking, setLastBooking] = useState(null);
+            const [authUser, setAuthUser] = useState(null);
+            const hasSeededRef = useRef(false);
 
             // Admin Specific State
             const [adminTab, setAdminTab] = useState('overview');
             const [editingDoctor, setEditingDoctor] = useState(null);
             const [bookingFilter, setBookingFilter] = useState('all');
 
-            // Persistence
+            // --- Firebase Auth & Firestore Listeners ---
             useEffect(() => {
-                const savedBookings = localStorage.getItem('mdc_bookings');
-                const savedDoctors = localStorage.getItem('mdc_doctors');
-                if (savedBookings) setBookings(JSON.parse(savedBookings));
-                if (savedDoctors) setDoctors(JSON.parse(savedDoctors));
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Auth Error:", error);
+                        // Fallback to anonymous if custom token fails (e.g. expired)
+                        try {
+                             await signInAnonymously(auth);
+                        } catch (anonError) {
+                             console.error("Anonymous Auth Error:", anonError);
+                        }
+                    }
+                };
+                initAuth();
+                
+                const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+                    setAuthUser(user);
+                });
+                return () => unsubscribeAuth();
             }, []);
 
             useEffect(() => {
-                localStorage.setItem('mdc_bookings', JSON.stringify(bookings));
-                localStorage.setItem('mdc_doctors', JSON.stringify(doctors));
-            }, [bookings, doctors]);
+                if (!authUser) return;
+
+                // 1. Listen to Doctors
+                const docsCol = collection(db, 'artifacts', appId, 'public', 'data', 'doctors');
+                const unsubDocs = onSnapshot(docsCol, (snapshot) => {
+                    if (snapshot.empty && !hasSeededRef.current) {
+                        // Seed initial data if DB is empty
+                        hasSeededRef.current = true;
+                        INITIAL_DOCTORS.forEach(async (docData) => {
+                            await addDoc(docsCol, docData);
+                        });
+                    } else {
+                        const fetchedDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setDoctors(fetchedDocs);
+                    }
+                }, (error) => console.error("Docs error:", error));
+
+                // 2. Listen to Bookings
+                const bookingsCol = collection(db, 'artifacts', appId, 'public', 'data', 'bookings');
+                const unsubBookings = onSnapshot(bookingsCol, (snapshot) => {
+                    const fetchedBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setBookings(fetchedBookings);
+                }, (error) => console.error("Bookings error:", error));
+
+                return () => {
+                    unsubDocs();
+                    unsubBookings();
+                };
+            }, [authUser]);
 
             useEffect(() => {
                 window.scrollTo(0,0);
@@ -879,64 +963,87 @@
                 setPaymentModal(true);
             };
 
-            const confirmPayment = () => {
+            const confirmPayment = async () => {
+                if (!authUser) {
+                    alert("System is offline. Please refresh.");
+                    return;
+                }
+                
                 const newBooking = {
-                    id: Date.now().toString(),
                     ...formData,
                     doctor: selectedDoctor.name,
                     amount: selectedDoctor.fee,
                     status: 'Confirmed',
                     timestamp: new Date().toISOString()
                 };
-                setBookings([newBooking, ...bookings]);
-                setLastBooking(newBooking); // Save specifically for SuccessView redirection
-                setPaymentModal(false);
-                setBookingStep(0);
-                setFormData({ name: '', phone: '', age: '', date: '', time: '' });
-                setView('success');
+
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'bookings'), newBooking);
+                    setLastBooking(newBooking); 
+                    setPaymentModal(false);
+                    setBookingStep(0);
+                    setFormData({ name: '', phone: '', age: '', date: '', time: '' });
+                    setView('success');
+                } catch (e) {
+                    alert("Error saving booking. Check internet/database connection.");
+                    console.error(e);
+                }
             };
 
-            const handleAdminAction = (id, action) => {
-                if (action === 'delete') {
-                    if(window.confirm("Are you sure you want to delete this booking?")) {
-                        setBookings(bookings.filter(b => b.id !== id));
+            const handleAdminAction = async (id, action) => {
+                if (!authUser) return;
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', id);
+
+                try {
+                    if (action === 'delete') {
+                        if(window.confirm("Are you sure you want to delete this booking?")) {
+                            await deleteDoc(docRef);
+                        }
+                    } else if (action === 'complete') {
+                        await updateDoc(docRef, { status: 'Completed' });
                     }
-                } else if (action === 'complete') {
-                    setBookings(bookings.map(b => b.id === id ? { ...b, status: 'Completed' } : b));
+                } catch (e) {
+                    console.error(e);
                 }
             };
 
-            const handleSaveDoctor = (e) => {
+            const handleSaveDoctor = async (e) => {
                 e.preventDefault();
+                if (!authUser) return;
                 const form = new FormData(e.target);
-                if (editingDoctor) {
-                    const updatedDocs = doctors.map(d => d.id === editingDoctor.id ? {
-                        ...d,
-                        name: form.get('name'),
-                        specialty: form.get('specialty'),
-                        qualification: form.get('qualification'),
-                        fee: form.get('fee')
-                    } : d);
-                    setDoctors(updatedDocs);
-                    setEditingDoctor(null);
-                } else {
-                    const newDoc = {
-                        id: Date.now(),
-                        name: form.get('name'),
-                        specialty: form.get('specialty'),
-                        qualification: form.get('qualification'),
-                        fee: form.get('fee'),
-                        image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300&h=300",
-                        available: true
-                    };
-                    setDoctors([...doctors, newDoc]);
+                
+                const docData = {
+                    name: form.get('name'),
+                    specialty: form.get('specialty'),
+                    qualification: form.get('qualification'),
+                    fee: form.get('fee'),
+                    // Use random image if adding new, or keep existing
+                    image: editingDoctor ? editingDoctor.image : "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=300&h=300",
+                    available: true
+                };
+
+                try {
+                    if (editingDoctor) {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'doctors', editingDoctor.id);
+                        await updateDoc(docRef, docData);
+                        setEditingDoctor(null);
+                    } else {
+                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'doctors'), docData);
+                    }
+                    e.target.reset();
+                } catch (e) {
+                    console.error(e);
                 }
-                e.target.reset();
             };
 
-            const handleDeleteDoctor = (id) => {
+            const handleDeleteDoctor = async (id) => {
+                if (!authUser) return;
                 if(window.confirm("Delete this doctor? This cannot be undone.")) {
-                    setDoctors(doctors.filter(d => d.id !== id));
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'doctors', id));
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
             };
 
@@ -1034,12 +1141,12 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
 
-  window.addEventListener('load', () => {
+
+          window.addEventListener('load', () => {
       const loader = document.getElementById('loader');
       loader.style.opacity = '0';
-      setTimeout(() => loader.remove(), 700);
+      setTimeout(() => loader.remove(), 600);
     });
-        
     </script>
 
  <!-- Loader Section -->
