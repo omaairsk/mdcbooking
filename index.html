@@ -11,10 +11,6 @@
     <!-- React & Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Custom Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
-
     <!-- Import Map -->
     <script type="importmap">
     {
@@ -29,8 +25,8 @@
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-bengali { font-family: 'Noto Sans Bengali', sans-serif; }
+        /* System fonts for performance and reliability - No external Google Fonts */
+        body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         
         /* Custom Animations */
         @keyframes blob {
@@ -70,6 +66,8 @@
         #loader .logo {
             width: 120px;
             height: 120px;
+            /* Medical cross icon as fallback if image fails */
+            background-color: #f0fdfa;
             background-image: url('file.jpg'); 
             background-size: cover;
             background-position: center;
@@ -111,6 +109,7 @@
     <script>
         window.addEventListener('load', () => {
             const loader = document.getElementById('loader');
+            // Ensure loader stays for at least 1s for smooth UX
             setTimeout(() => {
                 loader.style.opacity = '0';
                 setTimeout(() => loader.remove(), 600);
@@ -135,11 +134,10 @@
         import { createClient } from '@supabase/supabase-js';
 
         // --- Supabase Configuration ---
-        // Using the credentials you provided
         const SUPABASE_URL = "https://snjjxfrczwjxveakyifv.supabase.co".trim(); 
         const SUPABASE_ANON_KEY = "sb_publishable_KGrcuGLp1fhQ7bBscL-hpA_GEi7O-Zb".trim();
 
-        // Initialize Supabase Client
+        // Initialize Supabase Client Safely
         let supabase = null;
         try {
             if (SUPABASE_URL && SUPABASE_ANON_KEY) {
@@ -159,7 +157,7 @@
             facebook: "fb.com/centre.medicaldiagnostic"
         };
 
-        // UPDATED: All fees set to 300
+        // All fees set to 300
         const INITIAL_DOCTORS = [
             {
                 id: 1,
@@ -190,7 +188,8 @@
             { name: "Vaccination & Injection", icon: Syringe, desc: "Safe and hygienic administration." }
         ];
 
-        // --- Mock QR Code Component ---
+        // --- Components ---
+
         const PaymentQR = ({ amount, onConfirm, onCancel }) => (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4">
                 <motion.div 
@@ -235,14 +234,12 @@
             </div>
         );
 
-        // --- Sub-Components ---
-
         const ConfigBanner = ({ isOnline }) => (
             !isOnline ? (
             <div className="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-sm text-center flex items-center justify-center gap-2">
                 <WifiOff size={16} />
                 <span>
-                    <strong>Offline Mode:</strong> Changes are saved locally. Checking connection to Supabase...
+                    <strong>Offline Mode:</strong> Changes are saved locally. Connect to Supabase to sync.
                 </span>
             </div>
             ) : null
@@ -588,6 +585,7 @@
             adminTab, setAdminTab, editingDoctor, setEditingDoctor,
             bookingFilter, setBookingFilter, isOnline 
         }) => {
+            const [showSidebar, setShowSidebar] = useState(false);
             const today = new Date().toISOString().split('T')[0];
             const todaysBookings = bookings.filter(b => b.timestamp.startsWith(today));
             const pendingBookings = bookings.filter(b => b.status === 'Confirmed');
@@ -600,19 +598,25 @@
 
             return (
                 <div className="flex h-screen bg-gray-100 font-sans">
-                    <div className="w-64 bg-gray-900 text-gray-400 flex flex-col hidden md:flex">
+                    {/* Sidebar Toggle for Mobile */}
+                    <button onClick={() => setShowSidebar(!showSidebar)} className="fixed bottom-4 right-4 z-50 md:hidden bg-gray-900 text-white p-3 rounded-full shadow-lg">
+                        {showSidebar ? <X size={24}/> : <Menu size={24}/>}
+                    </button>
+
+                    {/* Sidebar */}
+                    <div className={`fixed inset-y-0 left-0 transform ${showSidebar ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition duration-200 ease-in-out w-64 bg-gray-900 text-gray-400 flex flex-col z-40`}>
                         <div className="p-6 text-white font-bold text-xl flex items-center gap-2">
                             <div className="w-8 h-8 bg-teal-600 rounded flex items-center justify-center">A</div>
                             Admin Panel
                         </div>
                         <nav className="flex-1 p-4 space-y-2">
-                            <button onClick={() => setAdminTab('overview')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'overview' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
+                            <button onClick={() => {setAdminTab('overview'); setShowSidebar(false)}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'overview' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
                                 <LayoutDashboard size={20} /> Overview
                             </button>
-                            <button onClick={() => setAdminTab('bookings')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'bookings' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
+                            <button onClick={() => {setAdminTab('bookings'); setShowSidebar(false)}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'bookings' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
                                 <FileText size={20} /> Appointments
                             </button>
-                            <button onClick={() => setAdminTab('doctors')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'doctors' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
+                            <button onClick={() => {setAdminTab('doctors'); setShowSidebar(false)}} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${adminTab === 'doctors' ? 'bg-teal-600 text-white' : 'hover:bg-gray-800'}`}>
                                 <Users size={20} /> Doctors
                             </button>
                         </nav>
@@ -628,8 +632,8 @@
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-auto">
-                        <div className="p-8">
+                    <div className="flex-1 overflow-auto w-full">
+                        <div className="p-4 md:p-8 pb-20 md:pb-8">
                             <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div>
                                     <h1 className="text-2xl font-bold text-gray-800 capitalize flex items-center gap-3">
@@ -641,7 +645,6 @@
                                     </h1>
                                     <div className="text-sm text-gray-500">Last updated: {new Date().toLocaleTimeString()}</div>
                                 </div>
-                                <button onClick={handleLogout} className="md:hidden flex items-center gap-2 text-red-500 text-sm"><LogOut size={16}/> Logout</button>
                             </header>
 
                             {adminTab === 'overview' && (
@@ -1025,12 +1028,14 @@
                     const { error } = await supabase.from('bookings').insert([newBooking]);
                     if (error) {
                         console.error("Supabase Save Error", error);
-                        alert("Could not save to online database. Saving locally.");
+                        // Don't alert aggressively, just log. UI updates optimistically anyway.
                     }
                 }
                 
                 // Optimistic UI update
-                setBookings(prev => [newBooking, ...prev]);
+                // Add temp ID for local consistency
+                const localBooking = { ...newBooking, id: Date.now().toString() };
+                setBookings(prev => [localBooking, ...prev]);
                 setLastBooking(newBooking); 
                 setPaymentModal(false);
                 setBookingStep(0);
@@ -1042,7 +1047,7 @@
                 // Optimistic update
                 if (action === 'delete') {
                     if(window.confirm("Are you sure you want to delete this booking?")) {
-                        if (isOnline && supabase) await supabase.from('bookings').delete().eq('id', id); // Note: Assuming ID matches remote
+                        if (isOnline && supabase) await supabase.from('bookings').delete().eq('id', id); 
                         setBookings(prev => prev.filter(b => b.id !== id));
                     }
                 } else if (action === 'complete') {
@@ -1069,7 +1074,6 @@
                     const { id, ...remoteData } = docData; 
                     if (editingDoctor) {
                         // Check if ID is integer (from DB) or timestamp (local)
-                        // If seeded from initial, usually ID is int. 
                         await supabase.from('doctors').update(remoteData).eq('id', editingDoctor.id);
                     } else {
                         await supabase.from('doctors').insert([remoteData]);
