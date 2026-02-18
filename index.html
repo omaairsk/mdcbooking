@@ -70,7 +70,6 @@
         #loader .logo {
             width: 120px;
             height: 120px;
-            /* Placeholder medical logo */
             background-image: url('file.jpg'); 
             background-size: cover;
             background-position: center;
@@ -136,6 +135,7 @@
         import { createClient } from '@supabase/supabase-js';
 
         // --- Supabase Configuration ---
+        // Using the credentials you provided
         const SUPABASE_URL = "https://snjjxfrczwjxveakyifv.supabase.co".trim(); 
         const SUPABASE_ANON_KEY = "sb_publishable_KGrcuGLp1fhQ7bBscL-hpA_GEi7O-Zb".trim();
 
@@ -159,7 +159,7 @@
             facebook: "fb.com/centre.medicaldiagnostic"
         };
 
-        // UPDATED FEES TO 300
+        // UPDATED: All fees set to 300
         const INITIAL_DOCTORS = [
             {
                 id: 1,
@@ -167,7 +167,7 @@
                 specialty: "Gynecologist",
                 qualification: "MBBS, DGO",
                 image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=300&h=300",
-                fee: 300, // Updated
+                fee: 300, 
                 available: true
             },
             {
@@ -176,7 +176,7 @@
                 specialty: "General Physician",
                 qualification: "MD Medicine",
                 image: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&q=80&w=300&h=300",
-                fee: 300, // Updated
+                fee: 300,
                 available: true
             }
         ];
@@ -242,7 +242,7 @@
             <div className="bg-amber-100 border-b border-amber-200 text-amber-800 px-4 py-2 text-sm text-center flex items-center justify-center gap-2">
                 <WifiOff size={16} />
                 <span>
-                    <strong>Offline Mode:</strong> Changes are saved locally. Connect to Supabase to sync across devices.
+                    <strong>Offline Mode:</strong> Changes are saved locally. Checking connection to Supabase...
                 </span>
             </div>
             ) : null
