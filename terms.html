@@ -1,60 +1,160 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Terms & Conditions — Medical Diagnostic Centre</title>
-  <meta name="description" content="Terms & Conditions for Medical Diagnostic Centre" />
-  <style>
-    :root{--primary:#007bff;--muted:#6b7280;--bg:#f8fafc}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;margin:0;background:var(--bg);color:#0b1220}
-    .container{max-width:900px;margin:36px auto;padding:18px;background:#fff;border-radius:10px;box-shadow:0 8px 30px rgba(15,15,15,0.06)}
-    header{padding:18px 0;text-align:center}
-    h1{margin:0 0 12px}
-    p{color:var(--muted);line-height:1.6}
-    a { color: var(--primary); text-decoration: none; }
-    nav{display:flex;justify-content:center;gap:12px;margin-bottom:18px}
-    nav a{color:#0b1220;padding:6px 8px;border-radius:6px}
-    nav a:hover{background:#f4f8fb}
-    footer{margin:32px 0 0;text-align:center;font-size:13px;color:var(--muted)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions - Medical Diagnostic Centre</title>
+    <style>
+        /* =========================================================
+           COLOR MATCHING SECTION 
+           Matches exactly with the privacy.html styling
+           ========================================================= */
+        :root {
+            --primary-color: #0d6efd; /* Your main brand color */
+            --background-color: #f4f7f6; /* The page background color */
+            --card-background: #ffffff; /* The white background of the text box */
+            --text-color: #333333; /* The main paragraph text color */
+            --border-color: #e0e0e0; /* The color of the lines separating sections */
+        }
+
+        /* Basic Page Styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Typography Styling */
+        h1 {
+            color: var(--primary-color);
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .last-updated {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        p, ul {
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Contact Box Styling */
+        .contact-box {
+            background-color: var(--background-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Terms &amp; Conditions</h1>
-      <p class="small">Please read these terms carefully before using our services.</p>
-    </header>
 
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="https://omaairsk.github.io/iamfardinsk/" target="_blank" rel="noopener noreferrer">Developer</a>
-    </nav>
+    <div class="container">
+        <h1>Terms & Conditions</h1>
+        <div class="last-updated">Last Updated: February 2026</div>
 
-    <section>
-      <h2>1. Acceptance</h2>
-      <p>By using our website and booking services, you agree to these Terms & Conditions. If you do not agree, please do not use the site.</p>
+        <p>Welcome to the <strong>Medical Diagnostic Centre</strong> application. By downloading, accessing, or using our app and booking portal, you agree to be bound by the following Terms & Conditions. Please read them carefully before utilizing our services.</p>
 
-      <h2>2. Booking & Appointments</h2>
-      <p>Appointment requests submitted via the website or WhatsApp are requests only and not confirmed bookings. A centre representative will confirm the appointment before it is final. The centre is not responsible for any delays or cancellations communicated by third-party providers.</p>
+        <h2>1. App Usage & Medical Disclaimer</h2>
+        <p>This application is designed to facilitate the booking of doctor appointments, diagnostic tests, and the retrieval of medical reports. <strong>This app is not intended to handle medical emergencies.</strong> In the event of a critical health emergency, please proceed directly to the nearest hospital or emergency room.</p>
 
-      <h2>3. Medical Advice</h2>
-      <p>Information on this website is for booking and informational purposes only. It does not constitute medical advice. For diagnosis or urgent medical needs, consult a qualified healthcare practitioner directly.</p>
+        <h2>2. Doctor Consultations & Fees</h2>
+        <p>We strive to provide affordable and accessible healthcare. By using the app to schedule a visit, you agree to the following:</p>
+        <ul>
+            <li>The standard consultation fee for all doctors available through the centre is strictly set at <strong>300 Rs</strong>.</li>
+            <li>Booking requests made through the app may redirect you to our official WhatsApp Business account for final confirmation and time slot allocation.</li>
+            <li>Appointments are subject to doctor availability and may be rescheduled with prior notice.</li>
+        </ul>
 
-      <h2>4. Liability</h2>
-      <p>To the extent permitted by law, Medical Diagnostic Centre will not be liable for indirect or consequential loss arising from the use of this site. Our total liability will not exceed amounts paid for services (if any).</p>
+        <h2>3. User Responsibilities & Uploads</h2>
+        <p>When using the app's features to upload files (such as previous medical prescriptions, referrals, or ID proofs), you agree that:</p>
+        <ul>
+            <li>All provided information is accurate and belongs to you or the patient you are legally authorized to represent.</li>
+            <li>You will not upload corrupted files, malware, or content unrelated to your medical diagnosis.</li>
+            <li>You grant our administrative and medical staff permission to view these files solely for the purpose of your healthcare and treatment.</li>
+        </ul>
 
-      <h2>5. Changes</h2>
-      <p>We may amend these terms at any time. Continued use after changes implies acceptance.</p>
+        <h2>4. Downloading Medical Reports</h2>
+        <p>The app allows you to download diagnostic and lab reports directly to your device. While we ensure the digital delivery of these files is secure, it is your responsibility to maintain the privacy of the downloaded reports on your personal mobile device or computer.</p>
 
-      <h2>Contact</h2>
-      <p>Questions about these Terms should be directed to <a href="mailto:help.medicaldiagnosticcentre@gmail.com">help.medicaldiagnosticcentre@gmail.com</a>.</p>
-    </section>
+        <h2>5. Modifications & App Updates</h2>
+        <p>We reserve the right to modify, suspend, or discontinue any feature of the app, including the booking portal, at any time. We recommend keeping the application updated to the latest version to ensure you receive important notifications, security patches, and the smoothest user experience.</p>
 
-    <footer>
-      © <strong>Medical Diagnostic Centre</strong> • <a href="privacy.html">Privacy Policy</a> • Developer: <a href="https://omaairsk.github.io/iamfardinsk/" target="_blank" rel="noopener noreferrer">iamfardinsk</a>
-    </footer>
-  </div>
+        <h2>6. Contact & Support</h2>
+        <p>For any technical issues with the app, questions regarding your booking, or general inquiries, please contact our administration desk:</p>
+
+        <div class="contact-box">
+            <strong>Medical Diagnostic Centre</strong><br>
+            📍 Address: Domkal Hospital More, Murshidabad, West Bengal<br>
+            📞 Phone: <a href="tel:+918001358535">8001358535</a><br>
+            ✉️ Email: <a href="mailto:help.medicaldiagnosticcentre@gmail.com">help.medicaldiagnosticcentre@gmail.com</a>
+        </div>
+    </div>
+
 </body>
 </html>
